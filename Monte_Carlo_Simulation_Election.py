@@ -2,6 +2,9 @@ import random
 import numpy as np
 import pandas as pd
 import operator
+import multiprocessing as mp
+
+results = []
 
 
 def create_candidates(list_of_candidates):
@@ -29,7 +32,7 @@ def create_voters(number_of_voters, candidates):
     voters={'voter_id':[],'preferential_score_candidate_A':[],
             'preferential_score_candidate_B':[],
             'preferential_score_candidate_C': [],
-            'Vote':''}
+            'Vote':[]}
 
     fame_score_candidate_a = candidates['A']
     fame_score_candidate_b = candidates['B']
@@ -39,9 +42,31 @@ def create_voters(number_of_voters, candidates):
         voters['voter_id'].append(trial)
         random_int = random.random()
 
-        voters['preferential_score_candidate_A'].append(1-abs(fame_score_candidate_a-random_int))
-        voters['preferential_score_candidate_B'].append(1-abs(fame_score_candidate_b-random_int))
-        voters['preferential_score_candidate_C'].append(1-abs(fame_score_candidate_c-random_int))
+        preferential_score_candidate_a = 1-abs(fame_score_candidate_a-random_int)
+        preferential_score_candidate_b = 1 - abs(fame_score_candidate_b - random_int)
+        preferential_score_candidate_c = 1 - abs(fame_score_candidate_c - random_int)
+
+        voters['preferential_score_candidate_A'].append(preferential_score_candidate_a)
+        voters['preferential_score_candidate_B'].append(preferential_score_candidate_b)
+        voters['preferential_score_candidate_C'].append(preferential_score_candidate_c)
+
+        list_of_preferential_scores = []
+
+        if 'A' in candidates:
+            list_of_preferential_scores.append(preferential_score_candidate_a)
+
+        if 'B' in candidates:
+            list_of_preferential_scores.append(preferential_score_candidate_b)
+
+        if 'C' in candidates:
+            list_of_preferential_scores.append(preferential_score_candidate_c)
+
+        max_value = max(list_of_preferential_scores)
+        voters['Vote'].append('A' if 'A' in candidates \
+                                 and max_value == preferential_score_candidate_a \
+            else 'B' if 'B' in candidates and \
+                        max_value == preferential_score_candidate_b \
+            else 'C')
 
     voters_pd = pd.DataFrame(voters)
 
@@ -358,11 +383,10 @@ def score_voting_election_method(voters, candidate, introduce_strategy, total_vo
     return list(sorted_dict_score_values.keys())[0]
 
 
-def main():
-    # call all functions
-
+def run_simulation(result_map):
     # Number of Monte Carlo Simulations
-    n_run = 100000
+    n_run = 10000
+    n_strategy = 2500
 
     # Generate Candidates with fame score
     candidates = create_candidates(['A', 'B', 'C'])
@@ -375,59 +399,119 @@ def main():
     print(voters)
 
     # Predict winner based on the preferential score
-    winner = determine_winner(n_run,voters)
-    print('Expected Winner = ',winner)
-
-    # Get voters based
-    voters_with_votes = generate_votes_based_on_candidates(voters, ['A', 'B', 'C'])
-    print('candidate based voters list')
-    print(voters_with_votes)
+    winner = determine_winner(n_run, voters)
+    print('Expected Winner = ', winner)
 
     # Get votes based on ranking
-    voters_with_ranking = generate_votes_by_assigning_ranks(voters, ['A','B','C'])
+    voters_with_ranking = generate_votes_by_assigning_ranks(voters, ['A', 'B', 'C'])
     print('ranked candidate based voters list')
     print(voters_with_ranking)
 
     # Applying Strategic Manipulaiton
-    voters_strategy = introduce_strategic_manipulation_on_votes(1000, voters, candidates, n_run)
+    voters_strategy = introduce_strategic_manipulation_on_votes(n_strategy, voters, candidates, n_run)
     print('Strategic Manipulation')
     print(voters_strategy)
 
     # Get winner using Plurality
-    winner_plurality = plurality_election_method(voters_with_votes)
+    winner_plurality = plurality_election_method(voters)
     print('Plurality Result = ', winner_plurality)
+    result_map['Plurality'].append(winner_plurality == winner)
 
     # Get winner using Plurality with strategy
     winner_plurality_strategy = plurality_election_method(voters_strategy)
     print('Strategy Plurality Result = ', winner_plurality_strategy)
+    result_map['Plurality_Strategy'].append(winner_plurality_strategy == winner)
 
     # Get winner using runoff
-    winner_runoff = runoff_election_method(voters_with_votes, len(candidates))
+    winner_runoff = runoff_election_method(voters, len(candidates))
     print('Run off Result =', winner_runoff)
+    result_map['Run_off'].append(winner_runoff == winner)
 
     # Get winner using runoff with strategy
     winner_runoff_strategy = runoff_election_method(voters_strategy, len(candidates))
     print('Run off Result with Strategy =', winner_runoff_strategy)
+    result_map['Run_off_Strategy'].append(winner_runoff_strategy == winner)
 
     # Get winner using borda
     winner_borda = borda_election_method(voters_with_ranking)
-    print('Borda Result =',winner_borda)
+    print('Borda Result =', winner_borda)
+    result_map['Borda'].append(winner_borda == winner)
 
     # Get winner using Condocert
-    winner_condocert = condocert_election_method(voters, candidates, False, n_run, 1000)
+    winner_condocert = condocert_election_method(voters, candidates, False, n_run, n_strategy)
     print('Condocert Result =', winner_condocert)
+    result_map['Condocert'].append(winner_condocert == winner)
 
     # Get winner using Condocert with strategy
-    winner_condocert = condocert_election_method(voters, candidates, True, n_run, 1000)
-    print('Condocert Result with strategy=', winner_condocert)
+    winner_condocert_strategy = condocert_election_method(voters, candidates, True, n_run, n_strategy)
+    print('Condocert Result with strategy=', winner_condocert_strategy)
+    result_map['Condocert_Strategy'].append(winner_condocert_strategy == winner)
 
     # Get winner using score voting
-    winner_score_voting = score_voting_election_method(voters, candidates, False, n_run, 1000)
+    winner_score_voting = score_voting_election_method(voters, candidates, False, n_run, n_strategy)
     print('Score Voting Result =', winner_score_voting)
+    result_map['Score_Voting'].append(winner_score_voting == winner)
 
     # Get winner using score voting with strategy
-    winner_score_voting_strategy = score_voting_election_method(voters, candidates, True, n_run, 1000)
+    winner_score_voting_strategy = score_voting_election_method(voters, candidates, True, n_run, n_strategy)
     print('Score Voting Result with Strategy =', winner_score_voting_strategy)
+    result_map['Score_Voting_Strategy'].append(winner_score_voting_strategy == winner)
+
+    return result_map
+
+
+def collect_result(result):
+    global results
+    results.append(result)
+
+
+def main():
+    global results
+    pd.set_option('display.max_colwidth', -1)
+    pd.set_option('display.max_columns', None)
+
+    pool = mp.Pool(mp.cpu_count())
+
+    result_map = [{'Plurality': [], 'Plurality_Strategy': [],
+                   'Run_off': [], 'Run_off_Strategy': [],
+                   'Borda': [],
+                   'Condocert': [], 'Condocert_Strategy': [],
+                   'Score_Voting': [], 'Score_Voting_Strategy': []}]
+
+    for i in range(0,100):
+        pool.apply_async(run_simulation, args=(result_map), callback=collect_result)
+
+    #result = [pool.apply(run_simulation, args=(result_map)) for i in range(0,4)]
+    pool.close()
+    pool.join()
+    print(results)
+
+    total_pluraity = 0
+    total_run_off = 0
+    total_borda = 0
+    total_condocert = 0
+    total_score_voting = 0
+    for each_result in results:
+        if each_result['Plurality'][0]:
+            total_pluraity += 1
+
+        if each_result['Run_off'][0]:
+            total_run_off += 1
+
+        if each_result['Borda'][0]:
+            total_borda += 1
+
+        if each_result['Condocert'][0]:
+            total_condocert += 1
+
+        if each_result['Score_Voting'][0]:
+            total_score_voting += 1
+
+    print('Probability of Plurality = ', total_pluraity / 100)
+    print('Probability of Run off = ', total_run_off / 100)
+    print('Probability of Borda = ', total_borda / 100)
+    print('Probability of Condocert = ', total_condocert / 100)
+    print('Probability of Score Voting = ', total_score_voting / 100)
 
 
 if __name__ == '__main__':
