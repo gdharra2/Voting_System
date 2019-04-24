@@ -6,6 +6,11 @@ import operator
 
 def create_candidates(list_of_candidates):
     # code to create candidates
+    """
+
+    :param list_of_candidates:
+    :return:
+    """
     data = {}
     for each_candidate in list_of_candidates:
         data[each_candidate] = random.random()
@@ -15,7 +20,12 @@ def create_candidates(list_of_candidates):
 
 def create_voters(number_of_voters, candidates):
     # code to create voters
-    print(number_of_voters)
+    """
+
+    :param number_of_voters:
+    :param candidates:
+    :return:
+    """
     voters={'voter_id':[],'preferential_score_candidate_A':[],
             'preferential_score_candidate_B':[],
             'preferential_score_candidate_C': [],
@@ -40,13 +50,15 @@ def create_voters(number_of_voters, candidates):
 
 def determine_winner(n_trials, voters):
     # code to determine winner
+    """
+
+    :param n_trials:
+    :param voters:
+    :return:
+    """
     total_score_a = voters.preferential_score_candidate_A.sum()/n_trials
     total_score_b = voters.preferential_score_candidate_B.sum()/n_trials
     total_score_c = voters.preferential_score_candidate_C.sum()/n_trials
-    print('total_score_A', total_score_a)
-    print('total_score_B', total_score_b)
-    print('total_score_C', total_score_c)
-
     if total_score_a > total_score_b:
         if total_score_a > total_score_c:
             return 'A'
@@ -59,34 +71,16 @@ def determine_winner(n_trials, voters):
             return 'C'
 
 
-def generate_votes(voters):
-    voter_votes = []
-
-    for index, row in voters.iterrows():
-        print('Preferential Score Votes')
-        print('A', row.preferential_score_candidate_A)
-        print('B', row.preferential_score_candidate_B)
-        print('C', row.preferential_score_candidate_C)
-
-        max_value = max(row.preferential_score_candidate_A, row.preferential_score_candidate_B, row.preferential_score_candidate_C)
-        print('max_value=',max_value)
-        voted_candidate = 'A' if max_value == row.preferential_score_candidate_A else 'B' if max_value == row.preferential_score_candidate_B else 'C'
-        print('voted_candidate=', voted_candidate)
-        voter_votes.append(voted_candidate)
-
-    voters['Vote'] = voter_votes
-
-    return voters
-
-
 def generate_votes_based_on_candidates(voters, candidates_list):
+    """
+
+    :param voters:
+    :param candidates_list:
+    :return:
+    """
     voter_votes = []
 
     for index, row in voters.iterrows():
-        print('Preferential Score Votes')
-        print('A', row.preferential_score_candidate_A)
-        print('B', row.preferential_score_candidate_B)
-        print('C', row.preferential_score_candidate_C)
 
         list_of_preferential_scores = []
 
@@ -100,9 +94,11 @@ def generate_votes_based_on_candidates(voters, candidates_list):
             list_of_preferential_scores.append(row.preferential_score_candidate_C)
 
         max_value = max(list_of_preferential_scores)
-        print('max_value=',max_value)
-        voted_candidate = 'A' if max_value == row.preferential_score_candidate_A else 'B' if max_value == row.preferential_score_candidate_B else 'C'
-        print('voted_candidate=', voted_candidate)
+        voted_candidate = 'A' if 'A' in candidates_list \
+                          and max_value == row.preferential_score_candidate_A \
+                          else 'B' if 'B' in candidates_list and \
+                          max_value == row.preferential_score_candidate_B \
+                          else 'C'
         voter_votes.append(voted_candidate)
 
     voters['Vote'] = voter_votes
@@ -110,7 +106,69 @@ def generate_votes_based_on_candidates(voters, candidates_list):
     return voters
 
 
-def introduce_strategic_manipulation(num_strategic_voters, voters, candidate, total_voters):
+def generate_votes_by_assigning_ranks(voters, candidates_list):
+    """
+
+    :param voters:
+    :param candidates_list:
+    :return:
+    """
+    voters_rank_a = []
+    voters_rank_b = []
+    voters_rank_c = []
+    for index, row in voters.iterrows():
+
+        dict_of_preferential_scores = {}
+
+        if 'A' in candidates_list:
+            dict_of_preferential_scores['A'] = row.preferential_score_candidate_A
+
+        if 'B' in candidates_list:
+            dict_of_preferential_scores['B'] = row.preferential_score_candidate_B
+
+        if 'C' in candidates_list:
+            dict_of_preferential_scores['C'] = row.preferential_score_candidate_C
+
+        sorted_dict_preferential_scores = dict(sorted(dict_of_preferential_scores.items(),
+                                                key=operator.itemgetter(1)))
+
+        i = 1
+
+        for each_score in sorted_dict_preferential_scores.keys():
+            sorted_dict_preferential_scores[each_score] = 1 + len(candidates_list) - i
+            i += 1
+
+        if 'A' in sorted_dict_preferential_scores.keys():
+            voters_rank_a.append(sorted_dict_preferential_scores['A'])
+        else:
+            voters_rank_a.append(np.nan)
+
+        if 'B' in sorted_dict_preferential_scores.keys():
+            voters_rank_b.append(sorted_dict_preferential_scores['B'])
+        else:
+            voters_rank_b.append(np.nan)
+
+        if 'C' in sorted_dict_preferential_scores.keys():
+            voters_rank_c.append(sorted_dict_preferential_scores['C'])
+        else:
+            voters_rank_c.append(np.nan)
+
+    voters['rank_a'] = voters_rank_a
+    voters['rank_b'] = voters_rank_b
+    voters['rank_c'] = voters_rank_c
+
+    return voters
+
+
+def introduce_strategic_manipulation_on_votes(num_strategic_voters, voters, candidate, total_voters):
+    """
+
+    :param num_strategic_voters:
+    :param voters:
+    :param candidate:
+    :param total_voters:
+    :return:
+    """
     get_famous_candidate = dict(sorted(candidate.items(), key=operator.itemgetter(1), reverse=True))
     print(list(get_famous_candidate.keys())[0])
     fame_candidate = list(get_famous_candidate.keys())[0]
@@ -124,18 +182,108 @@ def introduce_strategic_manipulation(num_strategic_voters, voters, candidate, to
 
 
 def plurality_election_method(voters):
+    """
+
+    :param voters:
+    :return:
+    """
     return voters.groupby('Vote')['Vote'].count().idxmax()
 
 
 def runoff_election_method(voters, number_of_candidates):
+    """
+
+    :param voters:
+    :param number_of_candidates:
+    :return:
+    """
     voters_by_count = voters.groupby('Vote')['Vote'].count() \
                       .reset_index(name='count').sort_values('count', ascending=False)\
                       .head(number_of_candidates-1)
-    print(voters_by_count)
     if len(voters_by_count)==1:
         return voters.groupby('Vote')['Vote'].count().idxmax()
     else:
-        return 'B'
+        new_list_of_voters = generate_votes_based_on_candidates(voters, list(voters_by_count['Vote']))
+        return runoff_election_method(new_list_of_voters, len(list(voters_by_count['Vote'])))
+
+
+def borda_election_method(voters):
+    """
+
+    :param voters:
+    :return:
+    """
+    rank_a = voters['rank_a'].sum()
+    rank_b = voters['rank_b'].sum()
+    rank_c = voters['rank_c'].sum()
+
+    print('rank_a={} rank_b={} rank_c={}'.format(rank_a,rank_b,rank_c))
+    net_score = {'A':rank_a, 'B':rank_b, 'C':rank_c}
+    sorted_net_score = dict(sorted(net_score.items(),
+                              key = operator.itemgetter(1), reverse=True))
+
+    return list(sorted_net_score.keys())[0]
+
+
+def condocert_election_method(voters):
+    """
+
+    :param voters:
+    :return:
+    """
+    total_votes_a = 0
+    total_votes_b = 0
+    total_votes_c = 0
+
+    for index, row in voters.iterrows():
+
+        if row.preferential_score_candidate_A > row.preferential_score_candidate_B:
+            if row.preferential_score_candidate_A > row.preferential_score_candidate_C:
+                total_votes_a += 1
+            else:
+                total_votes_c += 1
+        else:
+            if row.preferential_score_candidate_B > row.preferential_score_candidate_C:
+                total_votes_b += 1
+            else:
+                total_votes_c += 1
+
+    dict_score_values = {'A':total_votes_a, 'B':total_votes_b, 'C':total_votes_c}
+    sorted_dict_score_values = dict(sorted(dict_score_values.items(),
+                                           key = operator.itemgetter(1), reverse=True))
+
+    return list(sorted_dict_score_values.keys())[0]
+
+
+def score_voting_election_method(voters):
+    """
+    
+    :param voters:
+    :return:
+    """
+    score_votes_a = []
+    score_votes_b = []
+    score_votes_c = []
+
+    # rating all voters on a scale of 10
+    for index, row in voters.iterrows():
+        score_votes_a.append(row.preferential_score_candidate_A * 10)
+        score_votes_b.append(row.preferential_score_candidate_B * 10)
+        score_votes_c.append(row.preferential_score_candidate_C * 10)
+
+    voters['score_value_a'] = score_votes_a
+    voters['score_value_b'] = score_votes_b
+    voters['score_value_c'] = score_votes_c
+
+    score_a = voters['score_value_a'].sum()
+    score_b = voters['score_value_b'].sum()
+    score_c = voters['score_value_c'].sum()
+
+    dict_score_values = {'A': score_a, 'B': score_b, 'C': score_c}
+    sorted_dict_score_values = dict(sorted(dict_score_values.items(),
+                                           key=operator.itemgetter(1), reverse=True))
+
+    return list(sorted_dict_score_values.keys())[0]
 
 
 def main():
@@ -158,18 +306,23 @@ def main():
     winner = determine_winner(n_run,voters)
     print('Expected Winner = ',winner)
 
-    # Generate votes
-    voters = generate_votes(voters)
-    print('Votes Generated')
-    print(voters)
+    # Get voters based
+    voters_with_votes = generate_votes_based_on_candidates(voters, ['A', 'B', 'C'])
+    print('candidate based voters list')
+    print(voters_with_votes)
+
+    # Get votes based on ranking
+    voters_with_ranking = generate_votes_by_assigning_ranks(voters, ['A','B','C'])
+    print('ranked candidate based voters list')
+    print(voters_with_ranking)
 
     # Applying Strategic Manipulaiton
-    voters_strategy = introduce_strategic_manipulation(2, voters, candidates, n_run)
+    voters_strategy = introduce_strategic_manipulation_on_votes(2, voters, candidates, n_run)
     print('Strategic Manipulation')
     print(voters_strategy)
 
     # Get winner using Plurality
-    winner_plurality = plurality_election_method(voters)
+    winner_plurality = plurality_election_method(voters_with_votes)
     print('Plurality Result = ', winner_plurality)
 
     # Get winner using Plurality with strategy
@@ -177,12 +330,24 @@ def main():
     print('Strategy Plurality Result = ', winner_plurality_strategy)
 
     # Get winner using runoff
-    winner_runoff = runoff_election_method(voters, len(candidates))
+    winner_runoff = runoff_election_method(voters_with_votes, len(candidates))
     print('Run off Result =', winner_runoff)
 
-    voters_3 = generate_votes_based_on_candidates(voters, ['A','B','C'])
-    print('candidate based voters list')
-    print(voters_3)
+    # Get winner using runoff with strategy
+    winner_runoff_strategy = runoff_election_method(voters_strategy, len(candidates))
+    print('Run off Result with Strategy =', winner_runoff_strategy)
+
+    # Get winner using borda
+    winner_borda = borda_election_method(voters_with_ranking)
+    print('Borda Result =',winner_borda)
+
+    # Get winner using Condocert
+    winner_condocert = condocert_election_method(voters)
+    print('Condocert Result =', winner_condocert)
+
+    # Get winner using score voting
+    winner_score_voting = score_voting_election_method(voters)
+    print('Score Voting Result =', winner_score_voting)
 
 
 if __name__ == '__main__':
