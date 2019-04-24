@@ -217,7 +217,6 @@ def borda_election_method(voters):
     rank_b = voters['rank_b'].sum()
     rank_c = voters['rank_c'].sum()
 
-    print('rank_a={} rank_b={} rank_c={}'.format(rank_a,rank_b,rank_c))
     net_score = {'A':rank_a, 'B':rank_b, 'C':rank_c}
     sorted_net_score = dict(sorted(net_score.items(),
                               key = operator.itemgetter(1), reverse=True))
@@ -225,7 +224,7 @@ def borda_election_method(voters):
     return list(sorted_net_score.keys())[0]
 
 
-def condocert_election_method(voters):
+def condocert_election_method(voters, candidate, introduce_strategy, total_voters, num_strategic_voters):
     """
 
     :param voters:
@@ -235,18 +234,58 @@ def condocert_election_method(voters):
     total_votes_b = 0
     total_votes_c = 0
 
-    for index, row in voters.iterrows():
+    if introduce_strategy:
+        get_famous_candidate = dict(sorted(candidate.items(), key=operator.itemgetter(1), reverse=True))
+        fame_candidate = list(get_famous_candidate.keys())[0]
+        strategic_voter_ids = random.sample(range(0, total_voters), num_strategic_voters)
 
-        if row.preferential_score_candidate_A > row.preferential_score_candidate_B:
-            if row.preferential_score_candidate_A > row.preferential_score_candidate_C:
-                total_votes_a += 1
+        for index, row in voters.iterrows():
+            if index in strategic_voter_ids:
+                dict_preferential_values = {'A': row.preferential_score_candidate_A,
+                                            'B': row.preferential_score_candidate_B,
+                                            'C': row.preferential_score_candidate_C}
+                sorted_dict_preferential_values = dict(sorted(dict_preferential_values.items(),
+                                                              key=operator.itemgetter(1),
+                                                              reverse=True))
+                preferred_candidate = list(sorted_dict_preferential_values.keys())[0]
+                if preferred_candidate != fame_candidate:
+                    temp = dict_preferential_values[preferred_candidate]
+                    dict_preferential_values[preferred_candidate] = dict_preferential_values[fame_candidate]
+                    dict_preferential_values[fame_candidate] = temp
+
+                if dict_preferential_values['A'] > dict_preferential_values['B']:
+                    if dict_preferential_values['A'] > dict_preferential_values['C']:
+                        total_votes_a += 1
+                    else:
+                        total_votes_c += 1
+                else:
+                    if dict_preferential_values['B'] > dict_preferential_values['C']:
+                        total_votes_b += 1
+                    else:
+                        total_votes_c += 1
             else:
-                total_votes_c += 1
-        else:
-            if row.preferential_score_candidate_B > row.preferential_score_candidate_C:
-                total_votes_b += 1
+                if row.preferential_score_candidate_A > row.preferential_score_candidate_B:
+                    if row.preferential_score_candidate_A > row.preferential_score_candidate_C:
+                        total_votes_a += 1
+                    else:
+                        total_votes_c += 1
+                else:
+                    if row.preferential_score_candidate_B > row.preferential_score_candidate_C:
+                        total_votes_b += 1
+                    else:
+                        total_votes_c += 1
+    else:
+        for index, row in voters.iterrows():
+            if row.preferential_score_candidate_A > row.preferential_score_candidate_B:
+                if row.preferential_score_candidate_A > row.preferential_score_candidate_C:
+                    total_votes_a += 1
+                else:
+                    total_votes_c += 1
             else:
-                total_votes_c += 1
+                if row.preferential_score_candidate_B > row.preferential_score_candidate_C:
+                    total_votes_b += 1
+                else:
+                    total_votes_c += 1
 
     dict_score_values = {'A':total_votes_a, 'B':total_votes_b, 'C':total_votes_c}
     sorted_dict_score_values = dict(sorted(dict_score_values.items(),
@@ -255,21 +294,54 @@ def condocert_election_method(voters):
     return list(sorted_dict_score_values.keys())[0]
 
 
-def score_voting_election_method(voters):
+def score_voting_election_method(voters, candidate, introduce_strategy, total_voters, num_strategic_voters):
     """
-    
+
     :param voters:
+    :param candidate:
+    :param introduce_strategy:
+    :param total_voters:
+    :param num_strategic_voters:
     :return:
     """
+
     score_votes_a = []
     score_votes_b = []
     score_votes_c = []
 
-    # rating all voters on a scale of 10
-    for index, row in voters.iterrows():
-        score_votes_a.append(row.preferential_score_candidate_A * 10)
-        score_votes_b.append(row.preferential_score_candidate_B * 10)
-        score_votes_c.append(row.preferential_score_candidate_C * 10)
+    if introduce_strategy:
+        get_famous_candidate = dict(sorted(candidate.items(), key=operator.itemgetter(1), reverse=True))
+        fame_candidate = list(get_famous_candidate.keys())[0]
+        strategic_voter_ids = random.sample(range(0, total_voters), num_strategic_voters)
+
+        for index, row in voters.iterrows():
+
+            if index in strategic_voter_ids:
+                dict_preferential_values = {'A': row.preferential_score_candidate_A * 10,
+                                            'B': row.preferential_score_candidate_B * 10,
+                                            'C': row.preferential_score_candidate_C * 10}
+                sorted_dict_preferential_values = dict(sorted(dict_preferential_values.items(),
+                                                              key=operator.itemgetter(1),
+                                                              reverse=True))
+                preferred_candidate = list(sorted_dict_preferential_values.keys())[0]
+                if preferred_candidate != fame_candidate:
+                    temp = dict_preferential_values[preferred_candidate]
+                    dict_preferential_values[preferred_candidate] = dict_preferential_values[fame_candidate]
+                    dict_preferential_values[fame_candidate] = temp
+                score_votes_a.append(dict_preferential_values['A'] * 10)
+                score_votes_b.append(dict_preferential_values['B'] * 10)
+                score_votes_c.append(dict_preferential_values['C'] * 10)
+            else:
+                score_votes_a.append(row.preferential_score_candidate_A * 10)
+                score_votes_b.append(row.preferential_score_candidate_B * 10)
+                score_votes_c.append(row.preferential_score_candidate_C * 10)
+
+    else:
+        # rating all voters on a scale of 10
+        for index, row in voters.iterrows():
+            score_votes_a.append(row.preferential_score_candidate_A * 10)
+            score_votes_b.append(row.preferential_score_candidate_B * 10)
+            score_votes_c.append(row.preferential_score_candidate_C * 10)
 
     voters['score_value_a'] = score_votes_a
     voters['score_value_b'] = score_votes_b
@@ -290,7 +362,7 @@ def main():
     # call all functions
 
     # Number of Monte Carlo Simulations
-    n_run = 5
+    n_run = 100000
 
     # Generate Candidates with fame score
     candidates = create_candidates(['A', 'B', 'C'])
@@ -317,7 +389,7 @@ def main():
     print(voters_with_ranking)
 
     # Applying Strategic Manipulaiton
-    voters_strategy = introduce_strategic_manipulation_on_votes(2, voters, candidates, n_run)
+    voters_strategy = introduce_strategic_manipulation_on_votes(1000, voters, candidates, n_run)
     print('Strategic Manipulation')
     print(voters_strategy)
 
@@ -342,12 +414,20 @@ def main():
     print('Borda Result =',winner_borda)
 
     # Get winner using Condocert
-    winner_condocert = condocert_election_method(voters)
+    winner_condocert = condocert_election_method(voters, candidates, False, n_run, 1000)
     print('Condocert Result =', winner_condocert)
 
+    # Get winner using Condocert with strategy
+    winner_condocert = condocert_election_method(voters, candidates, True, n_run, 1000)
+    print('Condocert Result with strategy=', winner_condocert)
+
     # Get winner using score voting
-    winner_score_voting = score_voting_election_method(voters)
+    winner_score_voting = score_voting_election_method(voters, candidates, False, n_run, 1000)
     print('Score Voting Result =', winner_score_voting)
+
+    # Get winner using score voting with strategy
+    winner_score_voting_strategy = score_voting_election_method(voters, candidates, True, n_run, 1000)
+    print('Score Voting Result with Strategy =', winner_score_voting_strategy)
 
 
 if __name__ == '__main__':
