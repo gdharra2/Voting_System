@@ -16,3 +16,34 @@ Various voting systems are being studied to determine an effective system for se
 # Hypothesis
 1. The Condorcet system of voting may work the best in selecting a suitable candidate since every candidate is ranked with every other pair of candidates and the most favorable candidate gets to win.
 2. The Score Voting is vulnerable to strategic manipulation since the score is very subjective and quantitative. 
+
+# Libraries used
+import random
+import pandas as pd
+import operator
+import multiprocessing as mp
+
+# Method used
+1. Candidates – A random set of candidates are chosen that will be contesting for the election. Each candidate is assigned a random fame score that signifies popularity.
+
+2. Voters – A random set of 100000 voters are generated each having a unique voter id and a randomly generated preferential score. This randomly generated preferential score is compared with each candidate fame score to generate preference value for each candidate. 
+
+3. Expected Winner – This is computed purely based on summation of the preferential scores of all the voters.
+
+4. Generation of votes – 
+  a. Honest Voters: Votes are generated based on the preferential score provided by the candidate
+  b. Strategic Manipulation in voting: The concept of strategic manipulation is introduced by changing votes of  random voters to a famous candidate instead of their preferred candidate.
+
+5. A method exist for all voting systems to generate the winning candidate
+
+6. The next step involves simulating the whole process 100 times to 
+  a. compute probability of each voting system generating the expected winner
+  b. Identify effect of strategic manipulation on each voting system
+
+7. Parallel Processing was used to simulate the results using a multiprocessing module of python library to make an async call to the run_simulation() method.
+
+8. Based on the number of times a voting system produced an accurate result, the probability of generating the expected results was computed and is tabulated as shown in the results section.
+
+
+# References
+https://dss.berkeley.edu/blog/voting-systems.html
