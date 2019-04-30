@@ -31,14 +31,14 @@ Various voting systems are being studied to determine an effective system for se
 3. Expected Winner – This is computed purely based on summation of the preferential scores of all the voters.
 
 4. Generation of votes – 
-  a. Honest Voters: Votes are generated based on the preferential score provided by the candidate
-  b. Strategic Manipulation in voting: The concept of strategic manipulation is introduced by changing votes of  random voters to a famous candidate instead of their preferred candidate.
+  * Honest Voters: Votes are generated based on the preferential score provided by the candidate
+  * Strategic Manipulation in voting: The concept of strategic manipulation is introduced by changing votes of  random voters to a famous candidate instead of their preferred candidate.
 
 5. A method exist for all voting systems to generate the winning candidate
 
 6. The next step involves simulating the whole process 100 times to 
-  a. compute probability of each voting system generating the expected winner
-  b. Identify effect of strategic manipulation on each voting system
+  * Compute probability of each voting system generating the expected winner
+  * Identify effect of strategic manipulation on each voting system
 
 7. Parallel Processing was used to simulate the results using a multiprocessing module of python library to make an async call to the run_simulation() method.
 
