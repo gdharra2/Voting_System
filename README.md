@@ -24,9 +24,9 @@ Various voting systems are being studied to determine an effective system for se
 4. import multiprocessing as mp
 
 # Method used
-1. Candidates – A random set of candidates are chosen that will be contesting for the election. Each candidate is assigned a random fame score that signifies popularity.
+1. Candidates – A random set of candidates are chosen that will be contesting for the election. Each candidate is assigned a random fame score that signifies popularity. (Created as class objects of class Candidates)
 
-2. Voters – A random set of 100000 voters are generated each having a unique voter id and a randomly generated preferential score. This randomly generated preferential score is compared with each candidate fame score to generate preference value for each candidate. 
+2. Voters – A random set of 100000 voters are generated each having a unique voter id and a randomly generated preferential score. This randomly generated preferential score is compared with each candidate fame score to generate preference value for each candidate. (Created as class objects of class Voters) 
 
 3. Expected Winner – This is computed purely based on summation of the preferential scores of all the voters.
 
