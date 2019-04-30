@@ -18,10 +18,10 @@ Various voting systems are being studied to determine an effective system for se
 2. The Score Voting is vulnerable to strategic manipulation since the score is very subjective and quantitative. 
 
 # Libraries used
-import random
-import pandas as pd
-import operator
-import multiprocessing as mp
+1. import random
+2. import pandas as pd
+3. import operator
+4. import multiprocessing as mp
 
 # Method used
 1. Candidates – A random set of candidates are chosen that will be contesting for the election. Each candidate is assigned a random fame score that signifies popularity.
