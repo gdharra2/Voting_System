@@ -3,9 +3,9 @@ class Voters:
 
     def __init__(self, voter_id:int, preferential_score: float):
         """
-
-        :param voter_id:
-        :param preferential_score:
+        Initialize the Voters object
+        :param voter_id: A unique Id
+        :param preferential_score: A randomly generated score
         """
         self.voter_id = voter_id
         self.preferential_score = preferential_score
@@ -15,21 +15,20 @@ class Voters:
         self.strategic_vote = ''
         self.is_a_strategic_voter = False
 
-    def generate_preferences_for_candidates(self, list_candidates:[]):
+    def generate_preferences_for_candidates(self, list_candidates:list):
         """
-
-        :param preferential_score:
-        :param list_candidates:
+        Computes distance of each candidate from the voter based on the preferential and fame score.
+        :param list_candidates: List of all candidate objects
         :return:
         """
         for each_candidate in list_candidates:
             self.candidate_preferential_score[each_candidate.candidate_number] = \
                 1 - abs(each_candidate.fame_score - self.preferential_score)
 
-    def generate_votes(self, list_candidates:[]):
+    def generate_votes(self, list_candidates:list):
         """
-
-        :param list_candidates:
+        Creates votes based on the preferential score
+        :param list_candidates: List of candidates
         :return:
         """
         candidates_to_be_considered = {}
@@ -43,7 +42,7 @@ class Voters:
 
     def generate_ranks(self):
         """
-
+        Generate Ranks (1,2,3...) based on the preferential score
         :return:
         """
         sorted_candidate_preferential_score = dict(sorted(self.candidate_preferential_score.items(),
@@ -53,9 +52,11 @@ class Voters:
             self.ranked_votes[each_candidate] = rank
             rank += 1
 
-    def strategic_voters(self, is_a_strategic_voter, fame_candidate):
+    def strategic_voters(self, is_a_strategic_voter: bool, fame_candidate: int):
         """
-
+        Manipulates votes for strategic voters to favor the famous candidate instead of the preferred candidate.
+        :param is_a_strategic_voter: Boolean indicating if the voter is strategic or not
+        :param fame_candidate: Integer indicating the candidate number that has the highest fame score
         :return:
         """
         self.is_a_strategic_voter = is_a_strategic_voter
@@ -64,9 +65,9 @@ class Voters:
         else:
             self.strategic_vote = self.vote
 
-    def to_dict(self):
+    def to_dict(self)->dict:
         """
-
+        Converts voters object to a dictionary
         :return:
         """
         return {'voter_id':self.voter_id,
