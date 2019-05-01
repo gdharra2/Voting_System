@@ -26,13 +26,13 @@ Various voting systems are being studied to determine an effective system for se
 # Method used
 1. Candidates – A random set of candidates are chosen that will be contesting for the election. Each candidate is assigned a random fame score that signifies popularity. (Created as class objects of class Candidates)
 
-2. Voters – A random set of 100000 voters are generated each having a unique voter id and a randomly generated preferential score. This randomly generated preferential score is compared with each candidate fame score to generate preference value for each candidate. (Created as class objects of class Voters) 
+2. Voters – A random set of 10000 voters are generated each having a unique voter id and a randomly generated preferential score. This randomly generated preferential score is compared with each candidate fame score to generate preference value for each candidate. (Created as class objects of class Voters) 
 
 3. Expected Winner – This is computed purely based on summation of the preferential scores of all the voters.
 
 4. Generation of votes – 
    * Honest Voters: Votes are generated based on the preferential score provided by the candidate
-   * Strategic Manipulation in voting: The concept of strategic manipulation is introduced by changing votes of  random voters to a famous candidate instead of their preferred candidate.
+   * Strategic Manipulation in voting: The concept of strategic manipulation is introduced by changing votes of  random voters to a famous candidate instead of their preferred candidate. (25%)
 
 5. A method exist for all voting systems to generate the winning candidate
 
