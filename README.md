@@ -48,16 +48,22 @@ Various voting systems are being studied to determine an effective system for se
 
 Results from one of the simulation. (May vary each time the program is executed)
 
-* Probability of Plurality =  0.33
-* Probability of Run off =  0.45
-* Probability of Borda =  0.9
-* Probability of Condocert =  0.34
-* Probability of Score Voting =  1.0
-* Probability of Plurality Strategy =  0.35
-* Probability of Condocert Strategy =  0.14
-* Probability of Score Voting Strategy =  0.47
+    * Probability of Plurality =  0.35
+    * Probability of Run off =  0.34
+    * Probability of Borda =  0.81
+    * Probability of Condocert =  0.49
+    * Probability of Score Voting =  1.0
+    * Probability of Plurality Strategy =  0.37
+    * Probability of Run-off Strategy =  0.37
+    * Probability of Borda Strategy =  0.6
+    * Probability of Condocert Strategy =  0.27
+    * Probability of Score Voting Strategy =  0.54
 
-Based on the above results, the Score Voting method is more prone to strategic manipulation since the probability with strategy falls to 0.47 from 1.0. (This supports our hypothesis)
+* Based on the above results, the Score Voting method is more prone to strategic manipulation since the probability with strategy falls to 0.47 from 1.0. (This supports the hypothesis!!!)
+* The Borda system gives higher accuracy and gets little affected by strategic manipulation. Hence, that could be considered as a good voting system to choose a suitable candidate. (This is not supported by the hypothesis!!!)
+
+# Git Hub Results
+https://github.com/gdharra2/Voting_System
 
 # References
 https://dss.berkeley.edu/blog/voting-systems.html
