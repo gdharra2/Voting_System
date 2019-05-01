@@ -7,12 +7,17 @@ import Voters
 
 results = []
 
-def create_candidates(number_of_candidates:int):
-    # code to create candidates
+def create_candidates(number_of_candidates:int)->list:
     """
+    Description: This method is used to create candidates using the candidates object.
+    It takes the number of candidates as an input and generate a random fame score for the
+    candidate
+    :param number_of_candidates: Number of candidates to be created
+    :return: candidates: List of candidates object
 
-    :param number_of_candidates:
-    :return:
+    >>> list_of_candidates = create_candidates(3)
+    >>> len(list_of_candidates)
+    3
     """
     candidates=[]
     for each_candidate in range(0,number_of_candidates):
@@ -22,20 +27,27 @@ def create_candidates(number_of_candidates:int):
     return candidates
 
 
-def create_voters(number_of_voters, number_of_strategic_voters, candidates):
+def create_voters(number_of_voters: int, number_of_strategic_voters: int, candidates: list)->list:
     """
-
-    :param number_of_voters:
-    :param number_of_strategic_voters:
-    :param candidates:
+    Description: This method is used to create voters using the Voters object.
+    It takes the number of voters, number of strategic voters and candidates as input.
+    It generates a random preferential score for every voter and the candidate with the nearest
+    fame score gets the most preference.
+    It returns a list of voters object.
+    :param number_of_voters: Number of voters to be created
+    :param number_of_strategic_voters: Number of strategic voters to be added
+    :param candidates: List of candidate objects
     :return:
+    >>> list_of_candidates = create_candidates(3)
+    >>> list_of_voters = create_voters(10, 4, list_of_candidates)
+    >>> len(list_of_voters)
+    10
     """
     voters=[]
     list_of_strategic_voters = random.sample(range(0, number_of_voters), number_of_strategic_voters)
 
     candidate_dict = {k.candidate_number:k.fame_score for k in candidates}
     get_famous_candidate = dict(sorted(candidate_dict.items(), key=operator.itemgetter(1), reverse=True))
-    print('Famous Candidate = ',list(get_famous_candidate.keys())[0])
     fame_candidate = list(get_famous_candidate.keys())[0]
 
     for each_voter in range(0,number_of_voters):
@@ -48,12 +60,18 @@ def create_voters(number_of_voters, number_of_strategic_voters, candidates):
     return voters
 
 
-def determine_winner(voters):
-    # code to determine winner
+def determine_winner(voters: list)-> int:
     """
+    Description: Determines the winer based on the preferential score
+    It takes list of voters as input and adds up score of each voter for every candidate.
+    The candidate with the maximum score is determined as the winner and returned.
+    :param voters: list of voters as input
+    :return: Returns the candidate number of winning candidate
 
-    :param voters:
-    :return:
+    >>> list_of_candidates = create_candidates(3)
+    >>> list_of_voters = create_voters(10, 4, list_of_candidates)
+    >>> type(determine_winner(list_of_voters))
+    <class 'int'>
     """
     sum_of_scores_for_each_candidate = {}
     for each_voter in voters:
@@ -71,8 +89,17 @@ def determine_winner(voters):
     return list(sorted_scores.keys())[0]
 
 
-def runoff_election_method(voters, number_of_voters, number_of_strategic_voters, candidates, winner):
-
+def runoff_election_method(voters: list, number_of_voters: int, number_of_strategic_voters: int,
+                           candidates: list, winner: int) -> bool:
+    """
+    Description: This method is used to determine the winner based on the run off method
+    :param voters: List of voters
+    :param number_of_voters: Number of voters
+    :param number_of_strategic_voters: Number of strategic voters
+    :param candidates: List of candidates
+    :param winner: Expected Winner
+    :return: Returns a boolean if the winner from this type was the same as expected winner
+    """
     sum_of_scores_for_each_candidate = {}
 
     for each_voter in voters:
@@ -102,8 +129,17 @@ def runoff_election_method(voters, number_of_voters, number_of_strategic_voters,
         return runoff_election_method(new_list_of_voters, number_of_voters, number_of_strategic_voters, updated_candidate_list, winner)
 
 
-def determine_election_results_for_different_methods(voters, winner, result_map, n_strategy, candidates):
-
+def determine_election_results_for_different_methods(voters: list, winner: int, result_map: dict,
+                                                     n_strategy: int, candidates: list) -> dict:
+    """
+    Description: This method is used to determine the election result for different types of elections.
+    :param voters: List of voters
+    :param winner: Expected Winner
+    :param result_map: A dictionary of result for different types of voting system
+    :param n_strategy: Number of strategic voters
+    :param candidates: List of candidates
+    :return: Returns the result_map dictionary
+    """
     sum_of_scores_for_each_candidate = {}
     sum_of_scores_for_each_candidate_with_strategy = {}
     sum_of_ranks_for_each_candidate = {}
@@ -248,6 +284,12 @@ def run_simulation(result_map):
 
 
 def collect_result(result):
+    """
+    Description: Appends the result map returned from each simulaiton
+    to the global result list variable.
+    :param result: result_map returned from a simulation
+    :return:
+    """
     global results
     results.append(result)
 
