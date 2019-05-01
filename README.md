@@ -44,6 +44,20 @@ Various voting systems are being studied to determine an effective system for se
 
 8. Based on the number of times a voting system produced an accurate result, the probability of generating the expected results was computed and is tabulated as shown in the results section.
 
+# Simulaiton Result
+
+Results from one of the simulation. (May vary each time the program is executed)
+
+* Probability of Plurality =  0.33
+* Probability of Run off =  0.45
+* Probability of Borda =  0.9
+* Probability of Condocert =  0.34
+* Probability of Score Voting =  1.0
+* Probability of Plurality Strategy =  0.35
+* Probability of Condocert Strategy =  0.14
+* Probability of Score Voting Strategy =  0.47
+
+Based on the above results, the Score Voting method is more prone to strategic manipulation since the probability with strategy falls to 0.47 from 1.0. (This supports our hypothesis)
 
 # References
 https://dss.berkeley.edu/blog/voting-systems.html
