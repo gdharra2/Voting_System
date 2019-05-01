@@ -90,7 +90,7 @@ def determine_winner(voters: list)-> int:
 
 
 def runoff_election_method(voters: list, number_of_voters: int, number_of_strategic_voters: int,
-                           candidates: list, winner: int) -> bool:
+                           candidates: list, winner: int, is_strategy: bool) -> bool:
     """
     Description: This method is used to determine the winner based on the run off method
     :param voters: List of voters
@@ -98,6 +98,7 @@ def runoff_election_method(voters: list, number_of_voters: int, number_of_strate
     :param number_of_strategic_voters: Number of strategic voters
     :param candidates: List of candidates
     :param winner: Expected Winner
+    :param is_strategy: Boolean value indicating if strategy is to be used or not
     :return: Returns a boolean if the winner from this type was the same as expected winner
     """
     sum_of_scores_for_each_candidate = {}
@@ -105,10 +106,16 @@ def runoff_election_method(voters: list, number_of_voters: int, number_of_strate
     for each_voter in voters:
         vote_given = each_voter.vote
 
-        if vote_given in sum_of_scores_for_each_candidate.keys():
-            sum_of_scores_for_each_candidate[vote_given] += each_voter.vote
+        if not is_strategy:
+            if vote_given in sum_of_scores_for_each_candidate.keys():
+                sum_of_scores_for_each_candidate[vote_given] += each_voter.vote
+            else:
+                sum_of_scores_for_each_candidate[vote_given] = each_voter.vote
         else:
-            sum_of_scores_for_each_candidate[vote_given] = each_voter.vote
+            if vote_given in sum_of_scores_for_each_candidate:
+                sum_of_scores_for_each_candidate[vote_given] += each_voter.strategic_vote
+            else:
+                sum_of_scores_for_each_candidate[vote_given] = each_voter.strategic_vote
 
     sorted_scores = dict(sorted(sum_of_scores_for_each_candidate.items(),
                                 key=operator.itemgetter(1), reverse=True))
@@ -126,7 +133,9 @@ def runoff_election_method(voters: list, number_of_voters: int, number_of_strate
         return list(sorted_scores.keys())[0] == winner
     else:
         new_list_of_voters = create_voters(number_of_voters, number_of_strategic_voters, updated_candidate_list)
-        return runoff_election_method(new_list_of_voters, number_of_voters, number_of_strategic_voters, updated_candidate_list, winner)
+        return runoff_election_method(new_list_of_voters, number_of_voters,
+                                      number_of_strategic_voters, updated_candidate_list,
+                                      winner, is_strategy)
 
 
 def determine_election_results_for_different_methods(voters: list, winner: int, result_map: dict,
@@ -143,12 +152,14 @@ def determine_election_results_for_different_methods(voters: list, winner: int, 
     sum_of_scores_for_each_candidate = {}
     sum_of_scores_for_each_candidate_with_strategy = {}
     sum_of_ranks_for_each_candidate = {}
+    sum_of_ranks_for_each_candidate_strategy = {}
     condocert_votes_for_each_candidate = {}
     condocert_votes_for_each_candidate_strategy = {}
     score_votes_for_each_candidate = {}
     score_votes_for_each_candidate_strategy = {}
 
-    result_map['Run_off'].append(runoff_election_method(voters, len(voters), n_strategy, candidates, winner))
+    result_map['Run_off'].append(runoff_election_method(voters, len(voters), n_strategy, candidates, winner, False))
+    result_map['Run_off_Strategy'].append(runoff_election_method(voters, len(voters), n_strategy, candidates, winner, True))
 
     for each_voter in voters:
         vote_given = each_voter.vote
@@ -195,6 +206,19 @@ def determine_election_results_for_different_methods(voters: list, winner: int, 
         else:
             condocert_votes_for_each_candidate_strategy[winner_based_on_strategy_pref_Score] = 1
 
+        # Borda with strategy
+
+        if ranks[winner_based_on_strategy_pref_Score] != 1:
+            temp = ranks[winner_based_on_pref_score]
+            ranks[winner_based_on_pref_score] = ranks[winner_based_on_strategy_pref_Score]
+            ranks[winner_based_on_strategy_pref_Score] = 1
+
+        for each_candidate in ranks.keys():
+
+            if each_candidate in sum_of_ranks_for_each_candidate_strategy:
+                sum_of_ranks_for_each_candidate_strategy[each_candidate] += ranks[each_candidate]
+            else:
+                sum_of_ranks_for_each_candidate_strategy[each_candidate] = ranks[each_candidate]
 
         # Score Voting with and without strategy
 
@@ -231,6 +255,11 @@ def determine_election_results_for_different_methods(voters: list, winner: int, 
     sorted_ranks = dict(sorted(sum_of_ranks_for_each_candidate.items(),
                                 key=operator.itemgetter(1)))
     result_map['Borda'].append(list(sorted_ranks.keys())[0] == winner)
+
+    # Borda with strategy
+    sorted_ranks_strategy = dict(sorted(sum_of_ranks_for_each_candidate_strategy.items(),
+                               key=operator.itemgetter(1)))
+    result_map['Borda_Strategy'].append(list(sorted_ranks_strategy.keys())[0] == winner)
 
     # Condocert
     sorted_condocert_score = dict(sorted(condocert_votes_for_each_candidate.items(),
@@ -303,7 +332,7 @@ def main():
 
     result_map = [{'Plurality': [], 'Plurality_Strategy': [],
                    'Run_off': [], 'Run_off_Strategy': [],
-                   'Borda': [],
+                   'Borda': [], 'Borda_Strategy': [],
                    'Condocert': [], 'Condocert_Strategy': [],
                    'Score_Voting': [], 'Score_Voting_Strategy': []}]
 
@@ -326,6 +355,8 @@ def main():
     total_pluraity_strategy = 0
     total_condocert_strategy = 0
     total_score_voting_strategy = 0
+    total_borda_strategy = 0
+    total_run_off_strategy = 0
 
     for each_result in results:
         if each_result['Plurality'][0]:
@@ -346,6 +377,12 @@ def main():
         if each_result['Plurality_Strategy'][0]:
             total_pluraity_strategy += 1
 
+        if each_result['Run_off_Strategy'][0]:
+            total_run_off_strategy += 1
+
+        if each_result['Borda_Strategy'][0]:
+            total_borda_strategy += 1
+
         if each_result['Condocert_Strategy'][0]:
             total_condocert_strategy += 1
 
@@ -359,6 +396,8 @@ def main():
     print('Probability of Score Voting = ', total_score_voting / n_simulations)
 
     print('Probability of Plurality Strategy = ', total_pluraity_strategy / n_simulations)
+    print('Probability of Run-off Strategy = ', total_run_off_strategy / n_simulations)
+    print('Probability of Borda Strategy = ', total_borda_strategy / n_simulations)
     print('Probability of Condocert Strategy = ', total_condocert_strategy / n_simulations)
     print('Probability of Score Voting Strategy = ', total_score_voting_strategy / n_simulations)
 

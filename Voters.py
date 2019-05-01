@@ -71,4 +71,8 @@ class Voters:
         """
         return {'voter_id':self.voter_id,
                 'preferential_score':self.preferential_score,
-                'candidate_preferential_score':self.candidate_preferential_score,}
+                'candidate_preferential_score':self.candidate_preferential_score,
+                'vote':self.vote,
+                'ranked_votes': self.ranked_votes,
+                'strategic_vote':self.strategic_vote,
+                'is_strategic_voter':self.is_a_strategic_voter}
