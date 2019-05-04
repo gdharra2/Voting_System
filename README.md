@@ -34,6 +34,8 @@ C_No Fame_Score
 
 2. Voters – A random set of 10000 voters are generated each having a unique voter id and a randomly generated preferential score. This randomly generated preferential score is compared with each candidate fame score to generate preference value for each candidate. (Created as class objects of class Voters) 
 
+![Voters_DataFrame](https://github.com/gdharra2/Voting_System/blob/master/Voters_DataFrame.PNG)
+
 3. Expected Winner – This is computed purely based on summation of the preferential scores of all the voters.
 
 4. Generation of votes – 
