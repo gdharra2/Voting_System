@@ -1,4 +1,4 @@
-class Candidates:
+class Candidate:
 
     def __init__(self, fame_score:float, candidate_number: int):
         """

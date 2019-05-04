@@ -1,5 +1,6 @@
+# Rename it to Voter
 import operator
-class Voters:
+class Voter:
 
     def __init__(self, voter_id:int, preferential_score: float):
         """

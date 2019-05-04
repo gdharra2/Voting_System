@@ -2,8 +2,8 @@ import random
 import pandas as pd
 import operator
 import multiprocessing as mp
-import Candidates
-import Voters
+import Candidate
+import Voter
 
 results = []
 
@@ -21,7 +21,7 @@ def create_candidates(number_of_candidates:int)->list:
     """
     candidates=[]
     for each_candidate in range(0,number_of_candidates):
-        c = Candidates.Candidates(candidate_number=each_candidate,fame_score=random.random())
+        c = Candidate.Candidate(candidate_number=each_candidate, fame_score=random.random())
         candidates.append(c)
 
     return candidates
@@ -51,7 +51,7 @@ def create_voters(number_of_voters: int, number_of_strategic_voters: int, candid
     fame_candidate = list(get_famous_candidate.keys())[0]
 
     for each_voter in range(0,number_of_voters):
-        v = Voters.Voters(voter_id=each_voter, preferential_score=random.random())
+        v = Voter.Voter(voter_id=each_voter, preferential_score=random.random())
         v.generate_preferences_for_candidates(list_candidates=candidates)
         v.generate_votes(list_candidates=candidates)
         v.generate_ranks()
@@ -100,6 +100,10 @@ def runoff_election_method(voters: list, number_of_voters: int, number_of_strate
     :param winner: Expected Winner
     :param is_strategy: Boolean value indicating if strategy is to be used or not
     :return: Returns a boolean if the winner from this type was the same as expected winner
+    >>> list_of_candidates = create_candidates(3)
+    >>> list_of_voters = create_voters(10, 4, list_of_candidates)
+    >>> type(determine_winner(list_of_voters))
+    <class 'int'>
     """
     sum_of_scores_for_each_candidate = {}
 
@@ -148,6 +152,10 @@ def determine_election_results_for_different_methods(voters: list, winner: int, 
     :param n_strategy: Number of strategic voters
     :param candidates: List of candidates
     :return: Returns the result_map dictionary
+    >>> list_of_candidates = create_candidates(3)
+    >>> list_of_voters = create_voters(10, 4, list_of_candidates)
+    >>> type(determine_winner(list_of_voters))
+    <class 'int'>
     """
     sum_of_scores_for_each_candidate = {}
     sum_of_scores_for_each_candidate_with_strategy = {}
