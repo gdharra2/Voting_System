@@ -26,7 +26,26 @@ Various voting systems are being studied to determine an effective system for se
 # Method used
 1. Candidates – A random set of candidates are chosen that will be contesting for the election. Each candidate is assigned a random fame score that signifies popularity. (Created as class objects of class Candidates)
 
+C_No Fame_Score
+0    0.8290691871969342
+1    0.37198067114651157
+2    0.7485156062842424
+3    0.10907213016385042
+
 2. Voters – A random set of 10000 voters are generated each having a unique voter id and a randomly generated preferential score. This randomly generated preferential score is compared with each candidate fame score to generate preference value for each candidate. (Created as class objects of class Voters) 
+
+                                                                       candidate_preferential_score   is_strategic_voter  ....
+0     {0: 0.8998659017912126, 1: 0.6430455821583647, 2: 0.9804194827039044, 3: 0.38013704117570357}    False
+1     {0: 0.2096265582754342, 1: 0.6667150743258569, 2: 0.290180139188126, 3: 0.929623615308518}       False
+2     {0: 0.1968153597752632, 1: 0.6539038758256859, 2: 0.27736894068795503, 3: 0.916812416808347}     True
+3     {0: 0.7632246002934435, 1: 0.7796868836561338, 2: 0.8437781812061353, 3: 0.5167783426734727}     False
+4     {0: 0.9765034872432471, 1: 0.5664079967063302, 2: 0.9429429318440611, 3: 0.3034994557236691}     False
+5     {0: 0.8341769241461761, 1: 0.3770884080957534, 2: 0.7536233432334842, 3: 0.11417986711309225}    True
+6     {0: 0.9919495305905759, 1: 0.5509619533590014, 2: 0.9274968884967323, 3: 0.2880534123763403}     False
+7     {0: 0.5255806064907969, 1: 0.9826691225412195, 2: 0.6061341874034887, 3: 0.7544223364761193}     False
+8     {0: 0.777523440103336, 1: 0.7653880438462414, 2: 0.8580770210160278, 3: 0.5024795028635802}      False
+9     {0: 0.3640138046636333, 1: 0.821102320714056, 2: 0.44456738557632514, 3: 0.9159891383032829}     False
+10    {0: 0.36400514912870663, 1: 0.8210936651791293, 2: 0.44455873004139845, 3: 0.9159977938382096}   True
 
 3. Expected Winner – This is computed purely based on summation of the preferential scores of all the voters.
 
