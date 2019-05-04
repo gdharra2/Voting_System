@@ -26,11 +26,12 @@ Various voting systems are being studied to determine an effective system for se
 # Method used
 1. Candidates – A random set of candidates are chosen that will be contesting for the election. Each candidate is assigned a random fame score that signifies popularity. (Created as class objects of class Candidates)
 
-C_No  Fame_Score
-0     0.8290691871969342
-1     0.37198067114651157
-2     0.7485156062842424 
-3     0.10907213016385042
+| C_No | Fame_Score |
+|------|------------|
+|0 | 0.8290691871969342 |
+|1 | 0.37198067114651157 |
+|2 | 0.7485156062842424 |
+|3 | 0.10907213016385042 |
 
 2. Voters – A random set of 10000 voters are generated each having a unique voter id and a randomly generated preferential score. This randomly generated preferential score is compared with each candidate fame score to generate preference value for each candidate. (Created as class objects of class Voters) 
 
