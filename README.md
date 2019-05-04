@@ -29,7 +29,7 @@ Various voting systems are being studied to determine an effective system for se
 C_No Fame_Score
 0    0.8290691871969342
 1    0.37198067114651157
-2    0.7485156062842424
+2    0.7485156062842424 
 3    0.10907213016385042
 
 2. Voters – A random set of 10000 voters are generated each having a unique voter id and a randomly generated preferential score. This randomly generated preferential score is compared with each candidate fame score to generate preference value for each candidate. (Created as class objects of class Voters) 
