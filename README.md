@@ -35,6 +35,7 @@ C_No Fame_Score
 2. Voters – A random set of 10000 voters are generated each having a unique voter id and a randomly generated preferential score. This randomly generated preferential score is compared with each candidate fame score to generate preference value for each candidate. (Created as class objects of class Voters) 
 
       candidate_preferential_score                                                                    is_strategic_voter  ....
+      
 0     {0: 0.8998659017912126, 1: 0.6430455821583647, 2: 0.9804194827039044, 3: 0.38013704117570357}    False
 1     {0: 0.2096265582754342, 1: 0.6667150743258569, 2: 0.290180139188126, 3: 0.929623615308518}       False
 2     {0: 0.1968153597752632, 1: 0.6539038758256859, 2: 0.27736894068795503, 3: 0.916812416808347}     True
